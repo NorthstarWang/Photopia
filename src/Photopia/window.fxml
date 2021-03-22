@@ -70,22 +70,23 @@
                             </Tab>
                         </TabPane>
                     </AnchorPane>
-                    <AnchorPane minHeight="300.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                        <Label alignment="CENTER" layoutX="74.0" layoutY="199.0" prefHeight="63.0" prefWidth="210.0" text="Drag your image here" textAlignment="CENTER" AnchorPane.bottomAnchor="200.33333333333334" AnchorPane.leftAnchor="74.0" AnchorPane.rightAnchor="74.0" AnchorPane.topAnchor="199.0">
+                    <AnchorPane minHeight="300.0" minWidth="0.0" onDragDropped="#image_drop" onDragOver="#image_drag" prefHeight="100.0" prefWidth="160.0">
+                        <Label fx:id="image_label" alignment="CENTER" layoutX="74.0" layoutY="199.0" prefHeight="63.0" prefWidth="210.0" text="Drag your image here" textAlignment="CENTER" AnchorPane.bottomAnchor="200.33333333333334" AnchorPane.leftAnchor="74.0" AnchorPane.rightAnchor="74.0" AnchorPane.topAnchor="199.0">
                             <font>
                                 <Font size="20.0" />
                             </font>
                         </Label>
-                  <ImageView fx:id="image_view" fitHeight="427.0" fitWidth="329.0" layoutX="15.0" layoutY="18.0" onDragDropped="#image_drop" onDragOver="#image_drag" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="18.0" />
+                  <ImageView fx:id="image_view" fitHeight="427.0" fitWidth="329.0" layoutX="15.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="18.0" />
                     </AnchorPane>
                 </SplitPane>
             </AnchorPane>
-            <AnchorPane minHeight="400.0" minWidth="400.0">
-                <Label layoutX="219.0" layoutY="404.0" prefHeight="124.0" prefWidth="474.0" text="Upload your image" textAlignment="CENTER" AnchorPane.bottomAnchor="405.0" AnchorPane.leftAnchor="219.0" AnchorPane.rightAnchor="219.0" AnchorPane.topAnchor="404.0">
+            <AnchorPane fx:id="anchorpane_preview" minHeight="400.0" minWidth="400.0">
+                <Label fx:id="image_preview_label" layoutX="219.0" layoutY="404.0" prefHeight="124.0" prefWidth="474.0" text="Upload your image" textAlignment="CENTER" AnchorPane.bottomAnchor="405.0" AnchorPane.leftAnchor="219.0" AnchorPane.rightAnchor="219.0" AnchorPane.topAnchor="404.0">
                     <font>
                         <Font size="50.0" />
                     </font>
                 </Label>
+            <ImageView fx:id="image_preview" fitHeight="910.0" fitWidth="893.0" layoutX="10.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="11.0" />
             </AnchorPane>
         </SplitPane>
     </AnchorPane>
