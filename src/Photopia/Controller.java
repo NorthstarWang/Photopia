@@ -76,11 +76,20 @@ public class Controller {
     private ImageView image_preview;
 
     @FXML
+    private Label width_description;
+
+    @FXML
     private AnchorPane anchorpane_preview;
 
     @FXML
-    void ascii_cancel_onClick(MouseEvent event) {
+    private Slider ascii_contrast;
 
+    @FXML
+    private Slider ascii_brightness;
+
+    @FXML
+    void ascii_cancel_onClick(MouseEvent event) {
+        resetAll();
     }
 
     @FXML
@@ -104,9 +113,11 @@ public class Controller {
             } else {
                 width = Integer.parseInt(width_str);
                 //tryParse width setting
-                if (width < 100 || width > 800) {
+                int max_val = SwingFXUtils.fromFXImage(image_view.getImage(), null).getWidth()/50;
+                //Get the maximum width possible, largest pixel should be the total pixel of the picture/50(50 pixels in one ASCII character)
+                if (width < 1 || width > max_val) {
                     //if the value is not within the range, show alert and stop the process
-                    Alert alert = new Alert(Alert.AlertType.WARNING, "Please key in width between 100-800 in width, or leave blank to use default setting!");
+                    Alert alert = new Alert(Alert.AlertType.WARNING, "Please key in width between 1-"+ max_val +" in width, or leave blank to use default setting!");
                     alert.show();
                     //Reset width textfield
                     ascii_width.setText("");
@@ -125,7 +136,7 @@ public class Controller {
         //Monochrome is selected
         if (radio_mono.isSelected()) {
             opt = "mono";
-            Image image = ASCII_Image_By_Config(opt, image_view.getImage());
+            Image image = ASCII_Image_By_Config(opt, width,(float) ascii_contrast.getValue(),(int)ascii_brightness.getValue(), image_view.getImage());
             image_preview.setImage(image);
             image_preview_label.setText("");
 
@@ -133,7 +144,7 @@ public class Controller {
         //Color is selected
         else if (radio_color.isSelected()) {
             opt = "color";
-            Image image = ASCII_Image_By_Config(opt, image_view.getImage());
+            Image image = ASCII_Image_By_Config(opt, width,(float) ascii_contrast.getValue(),(int)ascii_brightness.getValue(), image_view.getImage());
             image_preview.setImage(image);
             image_preview_label.setText("");
         }
@@ -162,12 +173,22 @@ public class Controller {
 
     @FXML
     void image_drop(DragEvent event) throws FileNotFoundException {
+        if (image_view.getImage()!=null){
+            //If there is previous image in drop zone, reset textfield in ASCII tab and clear image_preview if there is any
+            resetASCIITab();
+            image_preview.setImage(null);
+        }
         //Retrieve the drag board file
         List<File> files = event.getDragboard().getFiles();
         Image img = new Image(new FileInputStream(files.get(0)));
         //Display the image
         image_view.setImage(img);
         image_label.setText("");
+        int max_val = SwingFXUtils.fromFXImage(image_view.getImage(), null).getWidth()/50;
+        //Get the maximum width possible, largest pixel should be the total pixel of the picture/50(50 pixels in one ASCII character)
+        width_description.setText("Please key in width between 1-"+ max_val +" in width, \nor leave blank to use default setting!");
+        //Change notification to tell user the range of the integer input allowed
+
         image_preview_label.setText("Click \"Preview\" Button to view the image");
         image_preview_label.setFont(Font.font("System", 20));
     }
@@ -194,19 +215,21 @@ public class Controller {
 
     @FXML
     void initialize() {
-        assert ascii_preview != null : "fx:id=\"ascii_preview\" was not injected: check your FXML file 'window.fxml'.";
-        assert ascii_export != null : "fx:id=\"ascii_export\" was not injected: check your FXML file 'window.fxml'.";
-        assert ascii_cancel != null : "fx:id=\"ascii_cancel\" was not injected: check your FXML file 'window.fxml'.";
-        assert radio_mono != null : "fx:id=\"radio_mono\" was not injected: check your FXML file 'window.fxml'.";
-        assert radio_color != null : "fx:id=\"radio_color\" was not injected: check your FXML file 'window.fxml'.";
-        assert ascii_width != null : "fx:id=\"ascii_width\" was not injected: check your FXML file 'window.fxml'.";
-        assert mosaic_preview != null : "fx:id=\"mosaic_preview\" was not injected: check your FXML file 'window.fxml'.";
-        assert mosaic_export != null : "fx:id=\"mosaic_export\" was not injected: check your FXML file 'window.fxml'.";
-        assert mosaic_cancel != null : "fx:id=\"mosaic_cancel\" was not injected: check your FXML file 'window.fxml'.";
-        assert mosaic_width != null : "fx:id=\"mosaic_width\" was not injected: check your FXML file 'window.fxml'.";
-        assert mosaic_directory != null : "fx:id=\"mosaic_directory\" was not injected: check your FXML file 'window.fxml'.";
-        assert image_view != null : "fx:id=\"image_view\" was not injected: check your FXML file 'window.fxml'.";
 
+    }
+
+    @FXML
+    void radio_color_onClick(MouseEvent event) {
+        if (radio_mono.isSelected()){
+            radio_mono.setSelected(false);
+        }
+    }
+
+    @FXML
+    void radio_mono_onClick(MouseEvent event) {
+        if (radio_color.isSelected()){
+            radio_color.setSelected(false);
+        }
     }
 
     private boolean checkFileExtension(String filename) {
@@ -219,16 +242,38 @@ public class Controller {
         return Arrays.asList(extensions).contains(extension.toLowerCase());
     }
 
-    private Image ASCII_Image_By_Config(String option, Image image) throws IOException {
+    private Image ASCII_Image_By_Config(String option, int width, float contrast, int brightness, Image image) throws IOException {
         BufferedImage img = SwingFXUtils.fromFXImage(image, null);
         //Convert Image to BufferedImage
         //Convert BufferImage to Base64 String
-        String ascii = switch (option) {
-            case "mono" -> ASCII.txtToImageByBase64(img);
-            default -> "";
-        };
+        String ascii = ASCII.txtToImageByBase64(img, width, contrast, brightness, option);
         String path = ASCII.Base64toImg(ascii);
         //Convert Base64 to image and store it in temp, return the relative path
         return new Image(new FileInputStream(path));
+    }
+
+    private void resetAll(){
+        resetLabel();
+        resetASCIITab();
+        resetImage();
+    }
+
+    private void resetASCIITab(){
+        ascii_brightness.setValue(0);
+        ascii_contrast.setValue(1);
+        ascii_width.setText("");
+        radio_mono.setSelected(false);
+        radio_color.setSelected(false);
+    }
+
+    private void resetImage(){
+        image_preview.setImage(null);
+        image_view.setImage(null);
+    }
+
+    private void resetLabel(){
+        image_preview_label.setText("Upload your image");
+        image_label.setText("Drag your image here");
+        width_description.setText("*Width determines number of pixels per \nASCII character represents. Leave blank to\nkeep 1 pixel as 1 character.");
     }
 }

@@ -7,6 +7,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -45,16 +46,20 @@
                                     <Button fx:id="ascii_preview" layoutX="14.0" layoutY="394.0" mnemonicParsing="false" onMouseClicked="#ascii_preview_onClick" prefHeight="25.0" prefWidth="90.0" text="Preview" textOverrun="CLIP" AnchorPane.bottomAnchor="13.333333333333353" AnchorPane.leftAnchor="14.0" />
                                     <Button fx:id="ascii_export" layoutX="134.0" layoutY="394.0" mnemonicParsing="false" onMouseClicked="#ascii_export_onClick" prefHeight="25.0" prefWidth="90.0" text="Export" AnchorPane.bottomAnchor="13.333333333333353" AnchorPane.leftAnchor="134.0" />
                                     <Button fx:id="ascii_cancel" layoutX="254.0" layoutY="394.0" mnemonicParsing="false" onMouseClicked="#ascii_cancel_onClick" prefHeight="25.0" prefWidth="90.0" text="Cancel" AnchorPane.bottomAnchor="13.333333333333353" AnchorPane.leftAnchor="254.0" />
-                                    <Label layoutX="14.0" layoutY="14.0" text="Convert:" />
-                                    <Label layoutX="19.0" layoutY="82.0" text="Width*:" />
-                                    <RadioButton fx:id="radio_mono" layoutX="75.0" layoutY="14.0" mnemonicParsing="false" text="Monochrome(Black &amp; White)" />
-                                    <RadioButton fx:id="radio_color" layoutX="75.0" layoutY="47.0" mnemonicParsing="false" text="Color" />
-                                    <TextField fx:id="ascii_width" layoutX="75.0" layoutY="78.0" />
-                                    <Label layoutX="75.0" layoutY="101.0" text="*Width determines number&#10;of ASCii Characters per line.&#10;Leave blank to keep 1 pixel&#10;as 1 character.&#10;">
+                                    <Label layoutX="39.0" layoutY="14.0" text="Convert:" />
+                                    <Label layoutX="42.0" layoutY="82.0" text="Width*:" />
+                                    <RadioButton fx:id="radio_mono" layoutX="104.0" layoutY="14.0" mnemonicParsing="false" onMousePressed="#radio_mono_onClick" text="Monochrome(Black &amp; White)" />
+                                    <RadioButton fx:id="radio_color" layoutX="104.0" layoutY="48.0" mnemonicParsing="false" onMouseClicked="#radio_color_onClick" text="Color" />
+                                    <TextField fx:id="ascii_width" layoutX="104.0" layoutY="78.0" />
+                                    <Label fx:id="width_description" layoutX="104.0" layoutY="101.0" text="*Width determines number of pixels per &#10;ASCII character represents. Leave blank to&#10;keep 1 pixel as 1 character.&#10;">
                                         <font>
                                             <Font size="10.0" />
                                         </font>
                                     </Label>
+                           <Slider fx:id="ascii_contrast" blockIncrement="0.01" layoutX="104.0" layoutY="146.0" majorTickUnit="0.1" max="2.0" minorTickCount="0" prefHeight="37.0" prefWidth="210.0" showTickLabels="true" showTickMarks="true" value="1.0" />
+                           <Label layoutX="33.0" layoutY="146.0" text="Contrast:" />
+                           <Label layoutX="21.0" layoutY="193.0" text="Brightness:" />
+                           <Slider fx:id="ascii_brightness" blockIncrement="5.0" layoutX="104.0" layoutY="194.0" majorTickUnit="15.0" max="255.0" min="-255.0" minorTickCount="0" prefHeight="37.0" prefWidth="210.0" showTickMarks="true" />
                                 </AnchorPane>
                             </Tab>
                             <Tab closable="false" text="Photographic Mosaic">
