@@ -10,7 +10,9 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.DirectoryChooser;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -20,9 +22,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class Controller {
+    private File selectedDir;
+
+    @FXML
+    public VBox VBox;
 
     @FXML
     private ResourceBundle resources;
@@ -99,11 +106,13 @@ public class Controller {
 
     @FXML
     void ascii_preview_onClick(MouseEvent event) throws IOException {
+        Alert alert;
         String opt;
         //Contain the value of the radio button that has been clicked
         int width;
         //Contain the width that key in
         String width_str = ascii_width.getText();
+
         //Get width textfield
         try {
             //If the width text is numeric, no exception will be triggered
@@ -113,11 +122,11 @@ public class Controller {
             } else {
                 width = Integer.parseInt(width_str);
                 //tryParse width setting
-                int max_val = SwingFXUtils.fromFXImage(image_view.getImage(), null).getWidth()/50;
+                int max_val = SwingFXUtils.fromFXImage(image_view.getImage(), null).getWidth() / 50;
                 //Get the maximum width possible, largest pixel should be the total pixel of the picture/50(50 pixels in one ASCII character)
                 if (width < 1 || width > max_val) {
                     //if the value is not within the range, show alert and stop the process
-                    Alert alert = new Alert(Alert.AlertType.WARNING, "Please key in width between 1-"+ max_val +" in width, or leave blank to use default setting!");
+                    alert = new Alert(Alert.AlertType.WARNING, "Please key in width between 1-" + max_val + " in width, or leave blank to use default setting!");
                     alert.show();
                     //Reset width textfield
                     ascii_width.setText("");
@@ -126,25 +135,35 @@ public class Controller {
             }
         } catch (Exception e) {
             //if input other than integer is in width textfield, show alert and stop the process
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Please key in correct integer in width!");
+            alert = new Alert(Alert.AlertType.WARNING, "Please key in correct integer in width!");
             alert.show();
             //Reset width textfield
             ascii_width.setText("");
             return;
         }
+
+        //Verify whether image_view has image
+        Image view;
+        try{
+            view = image_view.getImage();
+        }catch (Exception e){
+            alert = new Alert(Alert.AlertType.WARNING,"No image, please import first!");
+            alert.show();
+            return;
+        }
+
         //Do methods according to the radio selected
         //Monochrome is selected
         if (radio_mono.isSelected()) {
             opt = "mono";
-            Image image = ASCII_Image_By_Config(opt, width,(float) ascii_contrast.getValue(),(int)ascii_brightness.getValue(), image_view.getImage());
+            Image image = ASCII_Image_By_Config(opt, width, (float) ascii_contrast.getValue(), (int) ascii_brightness.getValue(), view);
             image_preview.setImage(image);
             image_preview_label.setText("");
-
         }
         //Color is selected
         else if (radio_color.isSelected()) {
             opt = "color";
-            Image image = ASCII_Image_By_Config(opt, width,(float) ascii_contrast.getValue(),(int)ascii_brightness.getValue(), image_view.getImage());
+            Image image = ASCII_Image_By_Config(opt, width, (float) ascii_contrast.getValue(), (int) ascii_brightness.getValue(), view);
             image_preview.setImage(image);
             image_preview_label.setText("");
         }
@@ -173,7 +192,7 @@ public class Controller {
 
     @FXML
     void image_drop(DragEvent event) throws FileNotFoundException {
-        if (image_view.getImage()!=null){
+        if (image_view.getImage() != null) {
             //If there is previous image in drop zone, reset textfield in ASCII tab and clear image_preview if there is any
             resetASCIITab();
             image_preview.setImage(null);
@@ -184,9 +203,9 @@ public class Controller {
         //Display the image
         image_view.setImage(img);
         image_label.setText("");
-        int max_val = SwingFXUtils.fromFXImage(image_view.getImage(), null).getWidth()/50;
+        int max_val = SwingFXUtils.fromFXImage(image_view.getImage(), null).getWidth() / 50;
         //Get the maximum width possible, largest pixel should be the total pixel of the picture/50(50 pixels in one ASCII character)
-        width_description.setText("Please key in width between 1-"+ max_val +" in width, \nor leave blank to use default setting!");
+        width_description.setText("Please key in width between 1-" + max_val + " in width, \nor leave blank to use default setting!");
         //Change notification to tell user the range of the integer input allowed
 
         image_preview_label.setText("Click \"Preview\" Button to view the image");
@@ -200,7 +219,9 @@ public class Controller {
 
     @FXML
     void mosaic_directory_onClick(MouseEvent event) {
-
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        //When button clicks, directory chooser pop up, the directory path will be store in the class variable
+        selectedDir = directoryChooser.showDialog(VBox.getScene().getWindow());
     }
 
     @FXML
@@ -209,8 +230,55 @@ public class Controller {
     }
 
     @FXML
-    void mosaic_preview_onClick(MouseEvent event) {
+    void mosaic_preview_onClick(MouseEvent event) throws IOException {
+        int width;
+        String width_str = mosaic_width.getText();
+        Alert alert;
 
+        //Get width textfield
+        try {
+            //If the width text is numeric, no exception will be triggered
+            width = Integer.parseInt(width_str);
+            //tryParse width setting
+            if (width < 10 || width > 50) {
+                //if the value is not within the range, show alert and stop the process
+                alert = new Alert(Alert.AlertType.WARNING, "Please key in width between 10-50 in width!");
+                alert.show();
+                //Reset width textfield
+                mosaic_width.setText("");
+                return;
+            }
+        } catch (Exception e) {
+            //if input other than integer is in width textfield, show alert and stop the process
+            alert = new Alert(Alert.AlertType.WARNING, "Please key in correct integer in width!");
+            alert.show();
+            //Reset width textfield
+            mosaic_width.setText("");
+            return;
+        }
+
+        String dirPath = selectedDir.getPath();
+
+        //Verify whether image_view has image
+        Image view;
+        try{
+            view = image_view.getImage();
+        }catch (Exception e){
+            alert = new Alert(Alert.AlertType.WARNING,"No image, please import first!");
+            alert.show();
+            return;
+        }
+
+        BufferedImage img = SwingFXUtils.fromFXImage(view, null);
+        //Check there are files in directory instead of an empty folder
+        int num = Objects.requireNonNull(new File(dirPath).list()).length;
+        if (num!=0){
+            String path = Mosaic.mosaicGenerate(dirPath, width, img);
+            image_preview.setImage(new Image(new FileInputStream(path)));
+        }else{
+            alert = new Alert(Alert.AlertType.WARNING,"The folder is empty!");
+            alert.show();
+        }
     }
 
     @FXML
@@ -220,14 +288,14 @@ public class Controller {
 
     @FXML
     void radio_color_onClick(MouseEvent event) {
-        if (radio_mono.isSelected()){
+        if (radio_mono.isSelected()) {
             radio_mono.setSelected(false);
         }
     }
 
     @FXML
     void radio_mono_onClick(MouseEvent event) {
-        if (radio_color.isSelected()){
+        if (radio_color.isSelected()) {
             radio_color.setSelected(false);
         }
     }
@@ -252,13 +320,13 @@ public class Controller {
         return new Image(new FileInputStream(path));
     }
 
-    private void resetAll(){
+    private void resetAll() {
         resetLabel();
         resetASCIITab();
         resetImage();
     }
 
-    private void resetASCIITab(){
+    private void resetASCIITab() {
         ascii_brightness.setValue(0);
         ascii_contrast.setValue(1);
         ascii_width.setText("");
@@ -266,12 +334,12 @@ public class Controller {
         radio_color.setSelected(false);
     }
 
-    private void resetImage(){
+    private void resetImage() {
         image_preview.setImage(null);
         image_view.setImage(null);
     }
 
-    private void resetLabel(){
+    private void resetLabel() {
         image_preview_label.setText("Upload your image");
         image_label.setText("Drag your image here");
         width_description.setText("*Width determines number of pixels per \nASCII character represents. Leave blank to\nkeep 1 pixel as 1 character.");
