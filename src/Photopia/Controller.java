@@ -214,7 +214,7 @@ public class Controller {
 
     @FXML
     void mosaic_cancel_onClick(MouseEvent event) {
-
+        resetAll();
     }
 
     @FXML
@@ -231,7 +231,7 @@ public class Controller {
 
     @FXML
     void mosaic_preview_onClick(MouseEvent event) throws IOException {
-        int width;
+        int width, num=0;
         String width_str = mosaic_width.getText();
         Alert alert;
 
@@ -240,9 +240,9 @@ public class Controller {
             //If the width text is numeric, no exception will be triggered
             width = Integer.parseInt(width_str);
             //tryParse width setting
-            if (width < 10 || width > 50) {
+            if (width < image_view.getImage().getWidth()/200 || width > image_view.getImage().getWidth()/50) {
                 //if the value is not within the range, show alert and stop the process
-                alert = new Alert(Alert.AlertType.WARNING, "Please key in width between 10-50 in width!");
+                alert = new Alert(Alert.AlertType.WARNING, "Please key in integer above "+ image_view.getImage().getWidth()/200 +" and below "+ (int)image_view.getImage().getWidth()/50 + " in width!");
                 alert.show();
                 //Reset width textfield
                 mosaic_width.setText("");
@@ -271,10 +271,18 @@ public class Controller {
 
         BufferedImage img = SwingFXUtils.fromFXImage(view, null);
         //Check there are files in directory instead of an empty folder
-        int num = Objects.requireNonNull(new File(dirPath).list()).length;
+        try{
+            //If there is folder selected
+            num = new File(dirPath).list().length;
+        }catch (NullPointerException e){
+            alert = new Alert(Alert.AlertType.WARNING,"Please choose directory!");
+            alert.show();
+            return;
+        }
         if (num!=0){
             String path = Mosaic.mosaicGenerate(dirPath, width, img);
             image_preview.setImage(new Image(new FileInputStream(path)));
+            image_preview_label.setText("");
         }else{
             alert = new Alert(Alert.AlertType.WARNING,"The folder is empty!");
             alert.show();
@@ -300,7 +308,7 @@ public class Controller {
         }
     }
 
-    private boolean checkFileExtension(String filename) {
+    public static boolean checkFileExtension(String filename) {
         //Check whether the file is image by its extension
         String extension;
         int i = filename.lastIndexOf('.');
@@ -324,8 +332,13 @@ public class Controller {
         resetLabel();
         resetASCIITab();
         resetImage();
+        resetMosaicTab();
     }
 
+    private void resetMosaicTab(){
+        mosaic_width.setText("");
+        mosaic_directory.setText("Choose directory");
+    }
     private void resetASCIITab() {
         ascii_brightness.setValue(0);
         ascii_contrast.setValue(1);

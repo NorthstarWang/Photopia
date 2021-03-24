@@ -10,9 +10,7 @@ import java.util.Base64;
 public interface ASCII {
     String ascii = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\\\"^`'.";
     String base = "@#&$%*o!;.";
-    /**
-     * 图片类型
-     */
+
     int IMAGE_TYPE = BufferedImage.TYPE_INT_RGB;
 
     static String txtToImageByBase64(BufferedImage bi, int set_row_pixel, float contrast, int brightness, String type) throws IOException {
