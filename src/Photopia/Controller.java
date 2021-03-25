@@ -1,7 +1,11 @@
 package Photopia;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -13,13 +17,12 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -95,13 +98,22 @@ public class Controller {
     private Slider ascii_brightness;
 
     @FXML
+    private MenuItem about;
+
+    @FXML
+    void about_click(ActionEvent event){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION,"Author: Wang Yang\nBuilt using: JavaFX\nGithub: https://github.com/NorthstarWang");
+        alert.show();
+    }
+
+    @FXML
     void ascii_cancel_onClick(MouseEvent event) {
         resetAll();
     }
 
     @FXML
-    void ascii_export_onClick(MouseEvent event) {
-
+    void ascii_export_onClick(MouseEvent event) throws IOException {
+        export();
     }
 
     @FXML
@@ -225,8 +237,8 @@ public class Controller {
     }
 
     @FXML
-    void mosaic_export_onClick(MouseEvent event) {
-
+    void mosaic_export_onClick(MouseEvent event) throws IOException {
+export();
     }
 
     @FXML
@@ -356,5 +368,15 @@ public class Controller {
         image_preview_label.setText("Upload your image");
         image_label.setText("Drag your image here");
         width_description.setText("*Width determines number of pixels per \nASCII character represents. Leave blank to\nkeep 1 pixel as 1 character.");
+    }
+
+    private void export() throws IOException {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File dest = directoryChooser.showDialog(VBox.getScene().getWindow());
+        //Choose where to store the image
+        File temp = new File("src\\Photopia\\temp\\temp.jpg");
+        //Load temp.jpg
+        temp.renameTo(dest);
+        //Move image to selected directory
     }
 }
