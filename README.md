@@ -31,12 +31,12 @@ To be able to run the application, **Java SDK** and **JavaFX package** are requi
 - Photographic Mosaic
 
   Convert image to photo mosaic, the tile images can be self-customized to fit the need.
-  ![her](#icon_her.jpg)
+  ![her](#icon_her)
 
 - ASCII art
 
   Convert image to ASCII art, setting on details of width, contrast and brightness are available.
-  ![ASCII](#icon_ASCII.jpg)
+  ![ASCII](#icon_ASCII)
 
 ## Copyright
 
