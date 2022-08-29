@@ -19,7 +19,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 #### Prerequisites
 
-To be able to run the application, **Java SDK** and **JavaFX package** are required.
+To be able to run the application, **Java SDK** and **JavaFX package** are required. For detail, refer to https://openjfx.io/openjfx-docs/
 
 ## Build using
 
